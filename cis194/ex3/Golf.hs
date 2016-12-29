@@ -19,9 +19,8 @@ localMaxima' :: [Integer] -> [Integer]
 localMaxima' = map (!! 1) . filter hasMaxima . groupList 3
 
 groupList :: Int -> [a] -> [[a]]
-groupList n xs = filter ((==n) . length) (foldr (group n) [[]] xs)
-  where
-    group n a l = (a : take (n - 1) (head l)) : l
+groupList n (a:xs) =  filter ((==n) . length) ((a:(take (n-1) xs)): groupList n xs)
+groupList _ _ = []
 
 hasMaxima :: [Integer] -> Bool
 hasMaxima xs@(x:y:z:[]) = maximum xs == y
