@@ -18,9 +18,18 @@ localMaxima xs = fst $ foldr isMaxima ([], (last xs , last xs)) xs
 localMaxima' :: [Integer] -> [Integer]
 localMaxima' = map (!! 1) . filter hasMaxima . groupList 3
 
+-- [1,2,3,4,5,6] -> [[1,2,3],[2,3,4],[3,4,5],[4,5,6]]
+-- groupList :: Int -> [a] -> [[a]]
+-- groupList n (a:xs) =  filter ((==n) . length) ((a:(take (n-1) xs)): groupList n xs)
+-- groupList _ _ = []
+
 groupList :: Int -> [a] -> [[a]]
-groupList n (a:xs) =  filter ((==n) . length) ((a:(take (n-1) xs)): groupList n xs)
-groupList _ _ = []
+groupList n = foldr (group n) [[]]
+  where
+    group n a l@(x:xs)
+      | n == 0 = [[]]
+      | (length x) < n = (a:x):xs
+      | otherwise = (a:(take (n-1) x)):l
 
 hasMaxima :: [Integer] -> Bool
 hasMaxima xs@(x:y:z:[]) = maximum xs == y
