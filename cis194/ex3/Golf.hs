@@ -1,5 +1,7 @@
 module Golf where
 
+import Data.List
+
 skip :: (Integral n) => n -> [a] -> [a]
 skip n = map snd . filter isIndex . (zip [1..])
   where
@@ -34,3 +36,12 @@ groupList n = foldr (group n) [[]]
 hasMaxima :: [Integer] -> Bool
 hasMaxima xs@(x:y:z:[]) = maximum xs == y
 hasMaxima _ = False
+
+histogram :: [Integer] -> String
+histogram = postFix . (intercalate "\n") . (map mapToString) . reverse . transpose . group . sort
+  where
+    mapToString xs = map (markPos xs) [0..9]
+    markPos xs a
+      | elem a xs = '*'
+      | otherwise = ' '
+    postFix = (++ "\n==========\n0123456789\n")
