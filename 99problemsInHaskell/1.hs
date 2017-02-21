@@ -5,6 +5,10 @@ lastE [] = error "No last element in the empty list"
 lastE [x] = x
 lastE (_:xs) = lastE xs
 
+lastE' :: [a] -> Maybe a
+lastE' [] = Nothing
+lastE' [x] = Just x
+lastE' (_:xs) = lastE' xs
 
 -- 2) Find the last but one element of a list.
 
@@ -13,6 +17,9 @@ secondLastE = fst . foldl (\(a,b) x -> (b,x)) (errA, errB)
   where
     errA = error "List is empty"
     errB = error "List has only one value"
+
+secondLastE' :: (Foldable f) => f a -> Maybe a
+secondLastE' = fst . foldl (\(a,b) x -> (b, Just x)) (Nothing, Nothing)
 
 
 -- 3) Find the K'th element of a list. The first element of the list is at position 1
@@ -24,6 +31,12 @@ kthE (x:xs) k
   | k <= 0 = error "elem out of bounds"
   | otherwise = kthE xs (k-1)
 
+kthE' :: (Ord k, Num k) => [a] -> k -> Maybe a
+kthE' (x:_) 1 = Just x
+kthE' [] _ = Nothing
+kthE' (x:xs) k
+  | k <= 0 = Nothing
+  | otherwise = kthE' xs (k-1)
 
 -- 4) Find the number of elements of a list
 ll :: (Num n) => [a] -> n
@@ -60,3 +73,16 @@ compress [x] = [x]
 compress (x:xs)
   | x == head xs = compress xs
   | otherwise = x : compress xs
+
+
+-- 9) Pack consecutive duplicates of list elements into sublists. If a list contains repeated elements they
+-- should be placed in separate sublists
+pack :: (Eq a) => [a] -> [[a]]
+-- pack ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a',
+--              'a', 'd', 'e', 'e', 'e', 'e']
+-- ["aaaa","b","cc","aa","d","eeee"]
+pack [] = []
+pack [x] = [[x]]
+pack (x:(y:xs))
+  | x == y = [x,y] ++ pack xs
+  | otherwise = [[x], [y]] ++ pack xs
